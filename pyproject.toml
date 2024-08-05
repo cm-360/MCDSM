@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "mcdsm"
+version = "0.1.0"
+description = "Minecraft Dockerized Server Manager"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+Quart = "^0.19.6"
+docker = "^7.1.0"
+quart-auth = "^0.10.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
