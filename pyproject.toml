@@ -15,3 +15,6 @@ quart-auth = "^0.10.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+start = "mcdsm:run"

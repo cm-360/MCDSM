@@ -1,0 +1,11 @@
+# Server data/config
+networks/
+shared/
+
+# Environment config
+.env
+
+# Python files
+__pycache__/
+*.py[cod]
+*$py.class

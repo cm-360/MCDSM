@@ -1,0 +1,36 @@
+<button id="start">Start</button>
+<button id="connect">Connect</button>
+
+<pre id="tty"></pre>
+<form id="cmdForm">
+<input id="cmd"></input>
+</form>
+
+<script>
+const startBtn = document.getElementById('start');
+const connectBtn = document.getElementById('connect');
+const tty = document.getElementById('tty');
+const cmd = document.getElementById('cmd');
+const cmdForm = document.getElementById('cmdForm');
+
+let socket;
+
+startBtn.addEventListener('click', (event) => {
+	fetch('/api/networks/example/servers/survival/start');
+});
+
+connectBtn.addEventListener('click', (event) => {
+	socket = new WebSocket("ws://localhost:5000/api/networks/example/servers/survival/console");
+
+	socket.addEventListener("message", (event) => {
+		console.log(event.data);
+		tty.innerHTML += event.data;
+	});
+});
+
+cmdForm.addEventListener('submit', (event) => {
+	event.preventDefault();
+	console.log(cmd.value);
+	socket.send(cmd.value + '\n');
+});
+</script>
