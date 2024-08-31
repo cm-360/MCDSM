@@ -17,6 +17,8 @@ app = Quart(__name__)
 # https://hub.docker.com/_/amazoncorretto
 # https://fabricmc.net/use/server/
 
+# https://docs.cubxity.dev/docs/unifiedmetrics/intro
+
 
 @app.route('/')
 async def page_home():
@@ -49,25 +51,25 @@ async def api_stop_server(network_id: str, server_id: str):
 
 
 # https://quart.palletsprojects.com/en/latest/how_to_guides/websockets.html#sending-and-receiving-independently
+# https://quart.palletsprojects.com/en/latest/tutorials/chat_tutorial.html
 
-async def sending(socket):
+async def _receive(console) -> None:
     while True:
-        data = os.read(socket.fileno(), 1024)
-        await websocket.send(data.decode('utf-8'))
-
-async def receiving(socket):
-    while True:
-        data = await websocket.receive()
-        os.write(socket.fileno(), data.encode('utf-8'))
+        command = await websocket.receive()
+        await console.send(command)
+    # except asyncio.CancelledError:
 
 @app.websocket('/api/networks/<network_id>/servers/<server_id>/console')
 async def api_server_console(network_id: str, server_id: str):
     server = app.manager.networks[network_id].servers[server_id]
-    socket = server.socket
 
-    producer = asyncio.create_task(sending(socket))
-    consumer = asyncio.create_task(receiving(socket))
-    await asyncio.gather(producer, consumer)
+    try:
+        task = asyncio.ensure_future(_receive(server.console))
+        async for data in server.console.subscribe():
+            await websocket.send(data)
+    finally:
+        task.cancel()
+        await task
 
 
 @app.before_serving

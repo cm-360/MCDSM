@@ -3,6 +3,7 @@ import json
 
 from mcdsm.models.networks import Network
 from mcdsm.models.networks import Server
+from mcdsm.models.networks import ConsoleBroker
 
 
 class Manager:
@@ -120,9 +121,11 @@ class Manager:
         # https://stackoverflow.com/questions/66328780/how-to-attach-a-pseudo-tty-to-a-docker-container-with-docker-py-to-replicate-beh
 
         # Create communication socket
-        server.socket = server.container.attach_socket(params={'stdout': True, 'stderr': True, 'stream': True})
-        # Set the socket as non-blocking
-        # server.socket._sock.setblocking(False)
+        socket = server.container.attach_socket(params={'stdin': True, 'stdout': True, 'stderr': True, 'stream': True})
+
+        server.console = ConsoleBroker(socket)
+        server.console.start_socket_listener()
+
 
     def stop_server(self, server):
         if server.container is not None:
