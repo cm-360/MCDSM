@@ -11,6 +11,8 @@ from mcdsm.manager import Manager
 
 app = Quart(__name__)
 
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+
 # /var/run/docker.sock:/var/run/docker.sock
 # https://maze88.dev/docker-socket-from-within-containers.html
 
@@ -23,6 +25,14 @@ app = Quart(__name__)
 @app.route('/')
 async def page_home():
     return await render_template('home.html')
+
+@app.route('/networks/<network_id>')
+async def page_network(network_id):
+    return await render_template('pages/network.html', network_id=network_id)
+
+@app.route('/networks/<network_id>/servers/<server_id>')
+async def page_server(network_id, server_id):
+    return await render_template('pages/server.html', network_id=network_id, server_id=server_id)
 
 # Networks
 
@@ -64,8 +74,8 @@ async def api_server_console(network_id: str, server_id: str):
     server = app.manager.networks[network_id].servers[server_id]
 
     try:
-        task = asyncio.ensure_future(_receive(server.console))
-        async for data in server.console.subscribe():
+        task = asyncio.ensure_future(_receive(server._console))
+        async for data in server._console.subscribe():
             await websocket.send(data)
     finally:
         task.cancel()
@@ -81,7 +91,13 @@ async def app_initialize():
 
 @app.after_serving
 async def app_cleanup():
-    pass
+    # Close server sockets
+    for network in app.manager.networks.values():
+        for server in network.servers.values():
+            socket = server._console.socket
+            if socket is not None:
+                socket.close()
+
 
 # Development entrypoint
 def run():

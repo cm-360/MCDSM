@@ -1,6 +1,8 @@
 import os
 import json
 
+from docker.errors import NotFound
+
 from mcdsm.models.networks import Network
 from mcdsm.models.networks import Server
 from mcdsm.models.networks import ConsoleBroker
@@ -11,7 +13,7 @@ class Manager:
     def __init__(self, docker_client):
         # Docker socket client
         self.client = docker_client
-        self.container_prefix = 'mcdsm'
+        self.prefix = 'mcdsm'
 
         # TODO: use env config instead of cwd
         cwd = os.getcwd()
@@ -50,6 +52,8 @@ class Manager:
                 directory=network_directory,
             )
 
+            self.ensure_docker_network(network)
+
             self.load_servers(network)
 
             return network
@@ -86,47 +90,89 @@ class Manager:
                 jar_arguments=config['jar_arguments'],
                 resources=config['resources'],
                 directory=server_directory,
-                network=network,
+                _network=network,
             )
+
+            self.ensure_server_container(server, create=False)
 
             return server
 
+    def attach_socket(self, server):
+        # https://stackoverflow.com/questions/66328780/how-to-attach-a-pseudo-tty-to-a-docker-container-with-docker-py-to-replicate-beh
+
+        # Create communication socket
+        socket = server._container.attach_socket(params={'stdin': True, 'stdout': True, 'stderr': True, 'stream': True})
+
+        server._console.set_socket(socket)
+        server._console.start_socket_listener()
+
     def start_server(self, server):
-        if server.container is not None:
-            server.container.start()
+        self.ensure_server_container(server)
+
+        server._container.reload()
+        if 'running' == server._container.status:
             return
 
+        server._container.start()
+        self.attach_socket(server)
+
+    def ensure_server_container(self, server, create=True):
+        # Nothing to do if container exists
+        if server._container is not None:
+            return
+
+        # Find existing container by name
+        try:
+            container_name = f'{self.prefix}_{server._network.id}_{server.id}'
+            server._container = self.client.containers.get(container_name)
+
+            server._container.reload()
+            if 'running' == server._container.status:
+                self.attach_socket(server)
+        except NotFound:
+            pass
+
+        if create:
+            self.create_server_container(server)
+
+    def create_server_container(self, server):
         # Path to JAR executable inside container
         jar_executable_path = os.path.join('/resources/software', server.jar_executable)
 
         # Volume directories
-        data_directory_external = os.path.join(self.networks_directory, server.network.id, 'servers', server.id, 'data')
+        data_directory_external = os.path.join(self.networks_directory, server._network.id, 'servers', server.id, 'data')
 
         # Start server container
-        server.container = self.client.containers.run(
+        server._container = self.client.containers.create(
             server.jvm_image,
             command=['java', *server.jvm_arguments, '-jar', jar_executable_path, *server.jar_arguments],
-            name=f'{self.container_prefix}_{server.network.id}_{server.id}',
+            name=f'{self.prefix}_{server._network.id}_{server.id}',
             volumes=[
                 f'{data_directory_external}:{self.data_directory_internal}:rw',
                 f'{self.resources_directory_external}:{self.resources_directory_internal}:ro'
             ],
             working_dir=self.data_directory_internal,
+            network=f'{self.prefix}_{server._network.id}',
             user=1000,
             stdin_open=True,
             tty=True,
             detach=True,
         )
 
-        # https://stackoverflow.com/questions/66328780/how-to-attach-a-pseudo-tty-to-a-docker-container-with-docker-py-to-replicate-beh
-
-        # Create communication socket
-        socket = server.container.attach_socket(params={'stdin': True, 'stdout': True, 'stderr': True, 'stream': True})
-
-        server.console = ConsoleBroker(socket)
-        server.console.start_socket_listener()
-
-
     def stop_server(self, server):
-        if server.container is not None:
-            server.container.stop()
+        if server._container is not None:
+            server._container.stop()
+
+    def ensure_docker_network(self, network):
+        if network.network_id is not None:
+            return
+
+        docker_network_name = f'{self.prefix}_{network.id}'
+
+        docker_networks = self.client.networks.list(names=[docker_network_name])
+        if len(docker_networks) > 0:
+            network.network_id = docker_networks[0].id
+            return
+
+        docker_network = self.client.networks.create(docker_network_name, driver='bridge')
+        network.network_id = docker_network.id

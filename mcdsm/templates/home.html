@@ -22,7 +22,7 @@ startBtn.addEventListener('click', (event) => {
 connectBtn.addEventListener('click', (event) => {
 	socket = new WebSocket("ws://localhost:5000/api/networks/example/servers/survival/console");
 
-	socket.addEventListener("message", (event) => {
+	socket.addEventListener('message', (event) => {
 		console.log(event.data);
 		tty.innerHTML += event.data;
 	});
