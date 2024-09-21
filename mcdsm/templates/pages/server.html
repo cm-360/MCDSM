@@ -1,51 +1,48 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <title>MCDSM</title>
 
-        <link
-            href="{{ url_for('static', filename='css/pages/server.css') }}"
-            rel="stylesheet"
-        />
+<head>
+    <meta charset="utf-8" />
+    <title>MCDSM</title>
 
-        <script
-            src="{{ url_for('static', filename='js/pages/server.js') }}"
-            defer
-        ></script>
-    </head>
-    <body>
-        <header></header>
+    <link href="{{ url_for('static', filename='css/pages/server.css') }}" rel="stylesheet" />
 
-        <main>
-            <header>
-                <div class="breadcrumbs">
-                    <a href="#">Networks</a>
-                    <a href="#">Example</a>
-                    <a href="#">Servers</a>
-                    <a href="#">Survival</a>
+    <script src="{{ url_for('static', filename='js/pages/server.js') }}" defer></script>
+</head>
+
+<body>
+    <header></header>
+
+    <main>
+        <header>
+            <div class="breadcrumbs">
+                <a href="#">Networks</a>
+                <a href="#">Example</a>
+                <a href="#">Servers</a>
+                <a href="#">Survival</a>
+            </div>
+            <div>
+                <div>
+                    <h2>Server Name</h2>
+                    <div>Running</div>
                 </div>
                 <div>
-                    <div>
-                        <h2>Server Name</h2>
-                        <div>Running</div>
-                    </div>
-                    <div>
-                        <button id="startStopButton">Start / Stop</button>
-                        <button id="restartButton">Restart</button>
-                        <button id="forceStopButton">Force Stop</button>
-                    </div>
+                    <button id="startStopButton">Start / Stop</button>
+                    <button id="restartButton">Restart</button>
+                    <button id="forceStopButton">Force Stop</button>
                 </div>
-            </header>
-            <section class="console">
-                <pre id="consoleLog"></pre>
-                <form id="consoleForm">
-                    <input type="text" name="command" />
-                    <button>Send</button>
-                </form>
-            </section>
-        </main>
+            </div>
+        </header>
+        <section class="console">
+            <pre id="consoleLog"></pre>
+            <form id="consoleForm">
+                <input type="text" name="command" />
+                <button>Send</button>
+            </form>
+        </section>
+    </main>
 
-        <footer></footer>
-    </body>
+    <footer></footer>
+</body>
+
 </html>
