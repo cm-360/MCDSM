@@ -18,3 +18,8 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 start = "mcdsm:run"
+
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"

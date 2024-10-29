@@ -10,32 +10,33 @@
     <script src="{{ url_for('static', filename='js/pages/server.js') }}" defer></script>
 </head>
 
-<body>
+<body data-network-id="{{ network_id }}" data-server-id="{{ server_id }}">
     <header></header>
 
     <main>
         <header>
             <div class="breadcrumbs">
-                <a href="#">Networks</a>
+                <span>Networks</span>
                 <a href="#">Example</a>
-                <a href="#">Servers</a>
+                <span>Servers</span>
                 <a href="#">Survival</a>
             </div>
             <div>
                 <div>
-                    <h2>Server Name</h2>
-                    <div>Running</div>
+                    <h2 id="server-name"></h2>
+                    <div id="server-status"></div>
+                    <div id="update-timestamp"></div>
                 </div>
                 <div>
-                    <button id="startStopButton">Start / Stop</button>
-                    <button id="restartButton">Restart</button>
-                    <button id="forceStopButton">Force Stop</button>
+                    <button id="start-stop-button">Start / Stop</button>
+                    <button id="restart-button">Restart</button>
+                    <button id="force-stop-button">Force Stop</button>
                 </div>
             </div>
         </header>
         <section class="console">
-            <pre id="consoleLog"></pre>
-            <form id="consoleForm">
+            <pre id="console-log"></pre>
+            <form id="console-form">
                 <input type="text" name="command" />
                 <button>Send</button>
             </form>
