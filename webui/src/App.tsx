@@ -1,35 +1,58 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import './App.css';
+import './theme.css';
+import AppSidebar from './components/AppSidebar';
+import DashboardView from './views/dashboard/DashboardView';
+
+export interface AppView {
+  name: string;
+  icon: string;
+  path: string;
+  element: JSX.Element;
+};
+
+const appViews: AppView[] = [
+  {
+    name: 'Dashboard',
+    icon: 'house',
+    path: '/',
+    element: <DashboardView />,
+  },
+  {
+    name: 'Servers',
+    icon: 'hdd-stack',
+    path: '/servers',
+    element: <DashboardView />,
+  },
+  {
+    name: 'Resources',
+    icon: 'box-seam',
+    path: '/resources',
+    element: <DashboardView />,
+  },
+  {
+    name: 'Settings',
+    icon: 'gear',
+    path: '/settings',
+    element: <DashboardView />,
+  },
+];
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <BrowserRouter>
+      <AppSidebar appViews={appViews} />
+      <main>
+        <Routes>
+          <Route path='/' element={<DashboardView />}></Route>
+          <Route path='/servers'></Route>
+          <Route path='/resources'></Route>
+          <Route path='/settings'></Route>
+        </Routes>
+      </main>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
