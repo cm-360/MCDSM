@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "mcdsm"
+name = "app"
 version = "0.1.0"
 description = "Minecraft Dockerized Server Manager"
 authors = ["Your Name <you@example.com>"]
@@ -17,7 +17,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-start = "mcdsm:run"
+start = "app:run"
 
 
 [tool.pyright]

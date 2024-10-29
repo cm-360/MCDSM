@@ -6,7 +6,7 @@ from quart import Quart
 from quart import websocket
 from quart import render_template
 
-from mcdsm.manager import Manager
+from .manager import Manager
 
 
 app = Quart(__name__)
