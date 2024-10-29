@@ -4,6 +4,9 @@ import './App.css';
 import './theme.css';
 import AppSidebar from './components/AppSidebar';
 import DashboardView from './views/dashboard/DashboardView';
+import ServersView from './views/servers/ServersView';
+import ResourcesView from './views/resources/ResourcesView';
+import SettingsView from './views/settings/SettingsView';
 
 export interface AppView {
   name: string;
@@ -23,32 +26,33 @@ const appViews: AppView[] = [
     name: 'Servers',
     icon: 'hdd-stack',
     path: '/servers',
-    element: <DashboardView />,
+    element: <ServersView />,
   },
   {
     name: 'Resources',
     icon: 'box-seam',
     path: '/resources',
-    element: <DashboardView />,
+    element: <ResourcesView />,
   },
   {
     name: 'Settings',
     icon: 'gear',
     path: '/settings',
-    element: <DashboardView />,
+    element: <SettingsView />,
   },
 ];
 
 function App() {
+  const viewRoutes = appViews.map((view) => 
+    <Route key={view.name} path={view.path} element={view.element}></Route>
+  );
+
   return (
     <BrowserRouter>
       <AppSidebar appViews={appViews} />
       <main>
         <Routes>
-          <Route path='/' element={<DashboardView />}></Route>
-          <Route path='/servers'></Route>
-          <Route path='/resources'></Route>
-          <Route path='/settings'></Route>
+          {viewRoutes}
         </Routes>
       </main>
     </BrowserRouter>

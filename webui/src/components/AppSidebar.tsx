@@ -15,7 +15,7 @@ function AppSidebar({ appViews }: AppSidebarProps) {
     const iconActiveSuffix = isActive ? '-fill' : '';
 
     return (
-      <Link className={'app-sidebar-button' + buttonActiveClass} title={view.name} to={view.path}>
+      <Link key={view.name} className={'app-sidebar-button' + buttonActiveClass} title={view.name} to={view.path}>
           <i className={`bi bi-${view.icon}` + iconActiveSuffix}></i>
       </Link>
     );
