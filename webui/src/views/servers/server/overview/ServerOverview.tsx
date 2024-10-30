@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 import './ServerOverview.css';
 
 function ServerOverview() {
@@ -22,7 +24,7 @@ function ServerOverview() {
         </div>
       </header>
       <div>
-
+        <Link to='console'>console</Link>
       </div>
     </>
   );

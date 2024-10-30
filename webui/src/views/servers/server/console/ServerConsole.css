@@ -1,0 +1,14 @@
+.server-console-output {
+    padding: 1em;
+    background-color: #0a0a0a;
+    border: 1px solid #222222;
+    border-radius: 0.5rem;
+    max-width: 1200px;
+}
+
+.server-console-input {
+    padding: 0.5em;
+    background-color: var(--color-neutral);
+    border: 1px solid var(--color-neutral-alt);
+    border-radius: 0.5em;
+}
