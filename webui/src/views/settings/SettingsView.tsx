@@ -1,6 +1,8 @@
 function SettingsView() {
   return (
-    <div>Settings</div>
+    <>
+      <div>Settings</div>
+    </>
   );
 }
 

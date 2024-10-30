@@ -1,6 +1,8 @@
 function ResourcesView() {
   return (
-    <div>Resources</div>
+    <>
+      <div>Resources</div>
+    </>
   );
 }
 
