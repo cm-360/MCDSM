@@ -11,7 +11,9 @@ function App() {
     <>
       <AppSidebar />
       <div className='app-content'>
-        <Breadcrumbs />
+        <header>
+          <Breadcrumbs />
+        </header>
         <main className='main-content'>
           <Outlet />
         </main>

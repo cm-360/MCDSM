@@ -1,0 +1,20 @@
+.server-overview-header {
+    display: flex;
+}
+
+.server-details {
+    display: flex;
+    align-items: baseline;
+    gap: 1em;
+}
+
+.server-title {
+    display: inline;
+}
+
+.server-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5em;
+}

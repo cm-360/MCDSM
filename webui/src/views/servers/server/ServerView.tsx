@@ -1,8 +1,8 @@
+import { Outlet } from "react-router-dom";
+
 function ServerView() {
   return (
-    <>
-      <div>One server</div>
-    </>
+    <Outlet />
   );
 }
 

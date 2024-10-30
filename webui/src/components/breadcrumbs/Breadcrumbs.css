@@ -1,7 +1,3 @@
-.breadcrumbs {
-    margin: 1em;
-}
-
 .crumb:not(:last-child)::after {
     content: ' / ';
     color: var(--color-foreground);

@@ -61,7 +61,7 @@ function Breadcrumbs() {
     );
 
   return (
-    <nav className='breadcrumbs'>{crumbLinks}</nav>
+    <nav className='breadcrumbs container-md'>{crumbLinks}</nav>
   );
 }
 

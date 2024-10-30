@@ -5,6 +5,7 @@ import App from './App';
 import DashboardView from './views/dashboard/DashboardView';
 import ServersView from './views/servers/ServersView';
 import ServerView from './views/servers/server/ServerView';
+import ServerOverview from './views/servers/server/ServerOverview';
 import ResourcesView from './views/resources/ResourcesView';
 import SettingsView from './views/settings/SettingsView';
 
@@ -15,7 +16,9 @@ function AppRouter() {
           <Route path='' element={<DashboardView />} />
           <Route path='servers'>
             <Route path='' element={<ServersView />} />
-            <Route path=':serverId' element={<ServerView />} />
+            <Route path=':serverId' element={<ServerView />}>
+              <Route path='' element={<ServerOverview />} />
+            </Route>
           </Route>
           <Route path='resources' element={<ResourcesView />} />
           <Route path='settings' element={<SettingsView />} />
