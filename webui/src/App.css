@@ -1,9 +1,6 @@
-body {
-    background-color: var(--color-background);
-}
-
-main {
+.app-content {
     margin-left: 4em;
+    overflow: auto;
 }
 
 .button {
@@ -18,4 +15,12 @@ main {
 
 .button:hover {
     background-color: var(--color-neutral-alt);
+}
+
+.link {
+    transition: color var(--transition-time);
+}
+
+.link:hover {
+    color: var(--color-primary);
 }

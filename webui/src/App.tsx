@@ -1,7 +1,6 @@
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
 import './App.css';
-import './theme.css';
 
 import { Outlet } from "react-router-dom";
 import AppSidebar from "./components/AppSidebar";
@@ -11,10 +10,12 @@ function App() {
   return (
     <>
       <AppSidebar />
-      <main className='main-content'>
+      <div className='app-content'>
         <Breadcrumbs />
-        <Outlet/>
-      </main>
+        <main className='main-content'>
+          <Outlet />
+        </main>
+      </div>
     </>
   );
 }

@@ -1,5 +1,6 @@
 import { Link, UIMatch, useMatches } from "react-router-dom";
-import { intersperse } from "../../utils";
+
+import './Breadcrumbs.css';
 
 export interface Crumb {
   name: string;
@@ -56,14 +57,14 @@ function Breadcrumbs() {
   const crumbLinks = matches
     .reduce(crumbsReducer, [])
     .map((crumb) => 
-      <Link key={crumb.path} to={crumb.path}>{crumb.name}</Link>
+      <Link className='crumb link' key={crumb.path} to={crumb.path}>{crumb.name}</Link>
     )
     .intersperse(
       <span> / </span>
     );
 
   return (
-    <nav>
+    <nav className='breadcrumbs'>
       <div>{crumbLinks}</div>
     </nav>
   );
