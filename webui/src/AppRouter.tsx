@@ -13,8 +13,10 @@ function AppRouter() {
     createRoutesFromElements(
         <Route path='/' element={<App />}>
           <Route path='' element={<DashboardView />} />
-          <Route path='servers' element={<ServersView />} />
-          <Route path='servers/:serverId' element={<ServerView />} />
+          <Route path='servers'>
+            <Route path='' element={<ServersView />} />
+            <Route path=':serverId' element={<ServerView />} />
+          </Route>
           <Route path='resources' element={<ResourcesView />} />
           <Route path='settings' element={<SettingsView />} />
         </Route>
