@@ -58,15 +58,10 @@ function Breadcrumbs() {
     .reduce(crumbsReducer, [])
     .map((crumb) => 
       <Link className='crumb link' key={crumb.path} to={crumb.path}>{crumb.name}</Link>
-    )
-    .intersperse(
-      <span> / </span>
     );
 
   return (
-    <nav className='breadcrumbs'>
-      <div>{crumbLinks}</div>
-    </nav>
+    <nav className='breadcrumbs'>{crumbLinks}</nav>
   );
 }
 
