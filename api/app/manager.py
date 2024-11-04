@@ -3,9 +3,9 @@ import json
 
 from docker.errors import NotFound
 
-from .models.networks import Network
-from .models.networks import Server
-from .models.networks import ConsoleBroker
+from .models import Network
+from .models import Server
+from .models import ConsoleBroker
 
 
 class Manager:

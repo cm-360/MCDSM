@@ -6,7 +6,8 @@ import os
 from dataclasses import dataclass
 from dataclasses import field
 from typing import AsyncGenerator
-from typing import Optional
+
+from ..base import Serializable
 
 
 class ConsoleBroker:
@@ -51,19 +52,6 @@ class ConsoleBroker:
         finally:
             self.connections.remove(connection)
 
-
-class Serializable:
-
-    def to_dict(self):
-        result = {}
-        for key, value in self.__dict__.items():
-            if not key.startswith("_"):
-                if hasattr(value, "to_dict"):
-                    result[key] = value.to_dict()
-                else:
-                    result[key] = value
-        return result
-
 @dataclass
 class Server(Serializable):
 
@@ -95,17 +83,3 @@ class Server(Serializable):
             }
 
         return result
-
-
-@dataclass
-class Network:
-
-    id: str
-
-    # Config from network.json
-    display_name: str
-
-    # Runtime attributes
-    directory: str
-    network_id: str = None
-    servers: dict[str, Server] = field(default_factory=dict)
