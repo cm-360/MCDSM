@@ -22,18 +22,6 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 # https://docs.cubxity.dev/docs/unifiedmetrics/intro
 
 
-@app.route('/')
-async def page_home():
-    return await render_template('home.html')
-
-@app.route('/networks/<network_id>')
-async def page_network(network_id):
-    return await render_template('pages/network.html', network_id=network_id)
-
-@app.route('/networks/<network_id>/servers/<server_id>')
-async def page_server(network_id, server_id):
-    return await render_template('pages/server.html', network_id=network_id, server_id=server_id)
-
 # Networks
 
 @app.route('/api/networks/<network_id>')
