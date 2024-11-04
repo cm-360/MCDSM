@@ -1,10 +1,15 @@
 import asyncio
 import os
+from traceback import format_exception
 
+# Docker client
 import docker
+# Quart
 from quart import Quart
 from quart import websocket
 from quart import render_template
+# Werkzeug
+from werkzeug.exceptions import HTTPException
 
 from .manager import Manager
 
@@ -26,13 +31,18 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 @app.route('/api/networks/<network_id>')
 async def api_network_info(network_id: str):
-    return ''
+    network = app.manager.get_network(network_id)
+    if network is None:
+        return api_error_generic('Not Found', f'Network: {network_id}', 404)
+    return network.to_dict()
 
 # Servers
 
 @app.route('/api/networks/<network_id>/servers/<server_id>')
 async def api_server_info(network_id: str, server_id: str):
-    server = app.manager.networks[network_id].servers[server_id]
+    server = app.manager.get_server(network_id, server_id)
+    if server is None:
+        return api_error_generic('Not Found', f'Network: {network_id}, Server: {server_id}', 404)
     return server.to_dict()
 
 @app.route('/api/networks/<network_id>/servers/<server_id>/start')
@@ -69,6 +79,66 @@ async def api_server_console(network_id: str, server_id: str):
         task.cancel()
         await task
 
+
+########## Error Handling ##########
+
+def api_error_generic(message: str, details: str, code: int=500):
+    """
+    JSON response template detailing a generic error.
+
+    Parameters:
+    - message (str): A title or short error summary message
+    - details (str): Extra details about the error
+    - code (int): The associated HTTP status code (default is 500)
+    """
+    return {
+        'error': {
+            'code': code,
+            'message': message,
+            'details': details,
+        }
+    }, code
+
+def api_error_exception(e: Exception, code: int=500):
+    """
+    JSON response template for an error caused by an exception.
+
+    Parameters:
+    - e (Exception): The exception causing the error
+    - code (int): The associated HTTP status code (default is 500)
+    """
+    return api_error_generic(
+        str(type(e).__name__),
+        str(e),
+        code=code,
+    )
+
+@app.errorhandler(Exception)
+async def handle_exception(e: Exception):
+    """
+    Handler for any uncaught exceptions in the app.
+
+    Exceptions and their tracebacks are logged as an error, and a JSON error response is
+    returned to the client. HTTP errors will not be processed and are instead passed
+    through to the client.
+
+    Parameters:
+    - e (Exception): The uncaught exception
+    """
+    # Pass through HTTP errors
+    if isinstance(e, HTTPException):
+        return e
+
+    # Log exception and traceback
+    app.logger.error('Uncaught exception')
+    for line in format_exception(type(e), e, e.__traceback__):
+        app.logger.error(line.rstrip('\n'))
+
+    # Return JSON response
+    return api_error_exception(e)
+
+
+########## Initialization / Cleanup ##########
 
 @app.before_serving
 async def app_initialize():
