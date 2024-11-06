@@ -55,14 +55,18 @@ async def api_server_info(network_id: str, server_id: str):
 
 @app.route('/api/networks/<network_id>/servers/<server_id>/start')
 async def api_start_server(network_id: str, server_id: str):
-    server = app.manager.networks[network_id].servers[server_id]
-    app.manager.start_server(server)
+    server = app.manager.get_server_manager(network_id, server_id)
+    if server is None:
+        return api_error_generic('Not Found', f'Network: {network_id}, Server: {server_id}', 404)
+    server.start_container()
     return ''
 
 @app.route('/api/networks/<network_id>/servers/<server_id>/stop')
 async def api_stop_server(network_id: str, server_id: str):
-    server = app.manager.networks[network_id].servers[server_id]
-    app.manager.stop_server(server)
+    server = app.manager.get_server_manager(network_id, server_id)
+    if server is None:
+        return api_error_generic('Not Found', f'Network: {network_id}, Server: {server_id}', 404)
+    server.stop_container()
     return ''
 
 
@@ -80,8 +84,8 @@ async def api_server_console(network_id: str, server_id: str):
     server = app.manager.networks[network_id].servers[server_id]
 
     try:
-        task = asyncio.ensure_future(_receive(server._console))
-        async for data in server._console.subscribe():
+        task = asyncio.ensure_future(_receive(server.console))
+        async for data in server.console.subscribe():
             await websocket.send(data)
     finally:
         task.cancel()

@@ -1,8 +1,21 @@
+import { useEffect, useState } from 'react';
+import { useServerContext } from '../ServerView';
 import './ServerConsole.css';
+import { API_BASE_URL } from '../../../../constants';
+
+const networkId = 'example';
 
 function ServerConsole() {
-  const consoleText = `multiline console text
-    indented`;
+  const { serverInfo } = useServerContext();
+
+  const [socket, setSocket] = useState<WebSocket | null>();
+  const [consoleText, setConsoleText] = useState('');
+
+  useEffect(() => {
+    const newSocket = new WebSocket(`${API_BASE_URL}/networks/${networkId}/servers/${serverInfo.id}/console`);
+    console.log(`Connected WebSocket for ${serverInfo.id}`);
+    setSocket(newSocket);
+  }, [serverInfo]);
 
   async function sendCommand(event: React.FormEvent) {
     event.preventDefault();
