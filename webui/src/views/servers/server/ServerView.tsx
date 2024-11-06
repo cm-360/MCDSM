@@ -29,10 +29,7 @@ function ServerView() {
   const fetchServerInfo = useCallback(() => {
     fetch(serverApiUrlBase)
       .then(response => response.json())
-      .then(data => {
-        console.log(data);
-        setServerInfo(data);
-      })
+      .then(data => setServerInfo(data))
       .catch(error => console.error(error));
   }, [setServerInfo]);
 
@@ -52,7 +49,7 @@ function ServerView() {
       .catch(error => console.error(error));
   }, []);
 
-  if (null === serverInfo) {
+  if (!serverInfo) {
     return <></>;
   }
 
