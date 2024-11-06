@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useServerContext } from '../ServerView';
 import './ServerConsole.css';
 import { API_BASE_URL } from '../../../../constants';
@@ -6,26 +6,41 @@ import { API_BASE_URL } from '../../../../constants';
 const networkId = 'example';
 
 function ServerConsole() {
-  const { serverInfo } = useServerContext();
+  const { serverInfo, shouldUpdate } = useServerContext();
 
-  const [socket, setSocket] = useState<WebSocket | null>();
+  const [socket, setSocket] = useState<WebSocket | null>(null);
   const [consoleText, setConsoleText] = useState('');
 
-  useEffect(() => {
+  const connectWebSocket = useCallback(() => {
+    socket?.close();
+
     const newSocket = new WebSocket(`${API_BASE_URL}/networks/${networkId}/servers/${serverInfo.id}/console`);
     console.log(`Connected WebSocket for ${serverInfo.id}`);
+
+    newSocket.addEventListener('message', (event) => {
+      console.log(event.data);
+    });
+
     setSocket(newSocket);
   }, [serverInfo]);
 
-  async function sendCommand(event: React.FormEvent) {
+  useEffect(() => {
+    connectWebSocket();
+  }, [serverInfo, shouldUpdate]);
+
+  const sendCommand = useCallback(async (event: React.FormEvent) => {
     event.preventDefault();
 
     const form = event.currentTarget as HTMLFormElement;
     const formData = new FormData(form);
     console.log(formData);
 
+    const command = formData.get('command');
+    if (command)
+      socket?.send(command + '\n');
+
     form.reset();
-  }
+  }, [socket]);
 
   return (
     <>

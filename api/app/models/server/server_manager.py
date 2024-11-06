@@ -17,8 +17,8 @@ class ServerManager(Serializable):
         self.id = os.path.basename(self.directory)
         # Docker
         self._container = None
-        self.socket = None
-        self.console = ConsoleBroker()
+        self._socket = None
+        self.console = ConsoleBroker(self)
         # Load JSON config
         self.load_config()
 
@@ -40,7 +40,11 @@ class ServerManager(Serializable):
                 resources=config['resources'],
             )
 
-            # self.ensure_server_container(server, create=False)
+    def get_or_create_container(self):
+        if self.container is None:
+            self.create_container()
+
+        return self.container
 
     def create_container(self) -> None:
         # Volume directories
@@ -51,6 +55,8 @@ class ServerManager(Serializable):
 
         # Path to JAR executable inside container
         jar_executable_path = os.path.join(resources_directory_internal, 'software', self.config.jar_executable)
+
+        # TODO pull image if needed
 
         # Create server container
         self._container = self.network.docker_manager.client.containers.create(
@@ -70,29 +76,22 @@ class ServerManager(Serializable):
         )
 
     def start_container(self) -> None:
-        self.container.start()
+        self.get_or_create_container().start()
         # self.attach_socket()
 
     def stop_container(self) -> None:
+        if self.container is None:
+            return  # TODO error
+
         self.container.stop()
-
-    def attach_socket(self) -> None:
-        # https://stackoverflow.com/questions/66328780/how-to-attach-a-pseudo-tty-to-a-docker-container-with-docker-py-to-replicate-beh
-
-        # Create communication socket
-        self.socket = self.container.attach_socket(params={'stdin': True, 'stdout': True, 'stderr': True, 'stream': True})
-
-        self.console.set_socket(socket)
-        self.console.start_socket_listener()
 
     @property
     def container(self):
-        # Find or create container
         if self._container is None:
             try:
                 self._container = self.network.docker_manager.client.containers.get(self.container_name)
             except NotFound:
-                self.create_container()
+                return None
 
         return self._container
 
@@ -102,12 +101,20 @@ class ServerManager(Serializable):
 
     @property
     def container_status(self) -> str:
-        if self._container is None:
+        if self.container is None:
             return 'removed'
         else:
-            self._container.reload()
+            self.container.reload()
             # 'restarting', 'running', 'paused', or 'exited'
-            return self._container.status
+            return self.container.status
+
+    # https://stackoverflow.com/questions/66328780/how-to-attach-a-pseudo-tty-to-a-docker-container-with-docker-py-to-replicate-beh
+    @property
+    def socket(self):
+        if self._socket is None:
+            self._socket = self.container.attach_socket(params={'stdin': False, 'stdout': True, 'stderr': True, 'stream': True})
+
+        return self._socket
 
     def to_dict(self) -> dict:
         return {

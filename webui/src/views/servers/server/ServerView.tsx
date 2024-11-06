@@ -7,6 +7,8 @@ import './ServerView.css';
 
 export interface ServerContextType {
   serverInfo: ServerInfo;
+  shouldUpdate: number;
+  requestUpdate: () => void;
 }
 
 const ServerContext = createContext<ServerContextType | null>(null);
@@ -16,33 +18,37 @@ const networkId = 'example';
 
 function ServerView() {
   const { serverId } = useParams();
-
   const serverApiUrlBase = `${API_BASE_URL}/networks/${networkId}/servers/${serverId}`;
 
+  const [shouldUpdate, setShouldUpdate] = useState(0);
+  const requestUpdate = useCallback(() => {
+    setShouldUpdate(Date.now());
+  }, []);
   const [serverInfo, setServerInfo] = useState<ServerInfo | null>(null);
 
   const fetchServerInfo = useCallback(() => {
     fetch(serverApiUrlBase)
       .then(response => response.json())
-      .then(data => setServerInfo(data))
+      .then(data => {
+        console.log(data);
+        setServerInfo(data);
+      })
       .catch(error => console.error(error));
   }, [setServerInfo]);
 
   useEffect(() => {
     fetchServerInfo();
-  }, []);
+  }, [shouldUpdate]);
 
   const startServer = useCallback(() => {
     fetch(`${serverApiUrlBase}/start`)
-      .then(response => response.json())
-      .then(data => console.log(data))
+      .then(() => requestUpdate())
       .catch(error => console.error(error));
   }, []);
 
   const stopServer = useCallback(() => {
     fetch(`${serverApiUrlBase}/stop`)
-      .then(response => response.json())
-      .then(data => console.log(data))
+      .then(() => requestUpdate())
       .catch(error => console.error(error));
   }, []);
 
@@ -57,7 +63,7 @@ function ServerView() {
   const statusIcon = isRunning ? 'check-circle' : 'x-circle';
 
   return (
-    <ServerContext.Provider value={{ serverInfo }}>
+    <ServerContext.Provider value={{ serverInfo, shouldUpdate, requestUpdate }}>
       <header className='server-view-header container-md'>
         <div className='server-details'>
           <h2 className='server-title'>{serverInfo.display_name}</h2>

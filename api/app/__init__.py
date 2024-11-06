@@ -6,6 +6,7 @@ from traceback import format_exception
 import docker
 # Quart
 from quart import Quart
+from quart import websocket
 # Werkzeug
 from werkzeug.exceptions import HTTPException
 
@@ -76,12 +77,15 @@ async def api_stop_server(network_id: str, server_id: str):
 async def _receive(console) -> None:
     while True:
         command = await websocket.receive()
+        print(command)
         await console.send(command)
     # except asyncio.CancelledError:
 
 @app.websocket('/api/networks/<network_id>/servers/<server_id>/console')
 async def api_server_console(network_id: str, server_id: str):
-    server = app.manager.networks[network_id].servers[server_id]
+    server = app.manager.get_server_manager(network_id, server_id)
+    if server is None:
+        return api_error_generic('Not Found', f'Network: {network_id}, Server: {server_id}', 404)
 
     try:
         task = asyncio.ensure_future(_receive(server.console))
