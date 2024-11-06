@@ -57,7 +57,7 @@ function Breadcrumbs() {
   const crumbLinks = matches
     .reduce(crumbsReducer, [])
     .map((crumb) => 
-      <Link className='crumb link' key={crumb.path} to={crumb.path}>{crumb.name}</Link>
+      <Link className='crumb link' key={crumb.path} to={crumb.path}>{crumb.name.toTitleCase()}</Link>
     );
 
   return (

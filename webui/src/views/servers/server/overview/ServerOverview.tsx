@@ -7,7 +7,7 @@ function ServerOverview() {
   const { serverInfo } = useServerContext();
 
   return (
-    <>      
+    <>
       <div>
         <Link to='console'>console</Link>
       </div>
