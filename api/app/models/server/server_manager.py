@@ -112,7 +112,7 @@ class ServerManager(Serializable):
     @property
     def socket(self):
         if self._socket is None:
-            self._socket = self.container.attach_socket(params={'stdin': False, 'stdout': True, 'stderr': True, 'stream': True})
+            self._socket = self.container.attach_socket(params={'stdin': True, 'stdout': True, 'stderr': True, 'stream': True})
 
         return self._socket
 

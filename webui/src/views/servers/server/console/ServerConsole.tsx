@@ -18,10 +18,24 @@ function ServerConsole() {
     console.log(`Connected WebSocket for ${serverInfo.id}`);
 
     newSocket.addEventListener('message', (event) => {
-      console.log(event.data);
+      const message = event.data;
+      console.log(message);
+      setConsoleText((consoleText) => consoleText + message);
     });
 
-    setSocket(newSocket);
+    newSocket.addEventListener('close', () => {
+      console.log(`WebSocket for ${serverInfo.id} closed`);
+    });
+
+    newSocket.addEventListener('error', () => {
+      console.error(`Error in WebSocket for ${serverInfo.id}, reconnecting in 3s...`);
+      setTimeout(connectWebSocket, 3000);
+    });
+
+    setSocket((oldSocket) => {
+      oldSocket?.close();
+      return newSocket;
+    });
   }, [serverInfo]);
 
   useEffect(() => {
@@ -33,13 +47,12 @@ function ServerConsole() {
 
     const form = event.currentTarget as HTMLFormElement;
     const formData = new FormData(form);
-    console.log(formData);
 
     const command = formData.get('command');
-    if (command)
+    if (command) {
       socket?.send(command + '\n');
-
-    form.reset();
+      form.reset();
+    }
   }, [socket]);
 
   return (

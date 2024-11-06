@@ -77,7 +77,6 @@ async def api_stop_server(network_id: str, server_id: str):
 async def _receive(console) -> None:
     while True:
         command = await websocket.receive()
-        print(command)
         await console.send(command)
     # except asyncio.CancelledError:
 
