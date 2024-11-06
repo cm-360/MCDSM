@@ -1,6 +1,6 @@
 class Serializable:
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         result = {}
         for key, value in self.__dict__.items():
             if not key.startswith('_'):

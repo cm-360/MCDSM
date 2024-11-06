@@ -141,14 +141,14 @@ async def handle_exception(e: Exception):
 ########## Initialization / Cleanup ##########
 
 @app.before_serving
-async def app_initialize():
+async def app_initialize() -> None:
     # Create Docker client and container manager
     docker_client = docker.from_env()
     app.manager = DockerManager(docker_client)
     app.manager.load_networks()
 
 @app.after_serving
-async def app_cleanup():
+async def app_cleanup() -> None:
     # Close server sockets
     for network in app.manager.networks.values():
         for server in network.servers.values():
@@ -158,5 +158,5 @@ async def app_cleanup():
 
 
 # Development entrypoint
-def run():
+def run() -> None:
     app.run()

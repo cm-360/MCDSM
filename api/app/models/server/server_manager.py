@@ -11,7 +11,7 @@ from .console_broker import ConsoleBroker
 
 class ServerManager(Serializable):
 
-    def __init__(self, network: 'NetworkManager', directory: str):
+    def __init__(self, network: 'NetworkManager', directory: str) -> None:
         self.network = network
         self.directory = directory
         self.id = os.path.basename(self.directory)
@@ -22,13 +22,13 @@ class ServerManager(Serializable):
         # Load JSON config
         self.load_config()
 
-    def load_config(self):
+    def load_config(self) -> None:
         # Read server.json config file
         config_file_path = os.path.join(self.directory, 'server.json')
         with open(config_file_path, 'r') as config_file:
             config = json.load(config_file)
 
-            # Instantiate Server object from config
+            # Instantiate ServerConfig object from config
             self.config = ServerConfig(
                 id=self.id,
                 display_name=config['display_name'],
@@ -42,7 +42,7 @@ class ServerManager(Serializable):
 
             # self.ensure_server_container(server, create=False)
 
-    def create_container(self):
+    def create_container(self) -> None:
         # Volume directories
         data_directory_external = os.path.join(self.network.directory, 'servers', self.id, 'data')
         data_directory_internal = self.network.docker_manager.data_directory_internal
@@ -69,14 +69,14 @@ class ServerManager(Serializable):
             detach=True,
         )
 
-    def start_container(self):
+    def start_container(self) -> None:
         self.container.start()
         # self.attach_socket()
 
-    def stop_container(self):
+    def stop_container(self) -> None:
         self.container.stop()
 
-    def attach_socket(self):
+    def attach_socket(self) -> None:
         # https://stackoverflow.com/questions/66328780/how-to-attach-a-pseudo-tty-to-a-docker-container-with-docker-py-to-replicate-beh
 
         # Create communication socket
@@ -97,11 +97,11 @@ class ServerManager(Serializable):
         return self._container
 
     @property
-    def container_name(self):
+    def container_name(self) -> str:
         return f'{self.network.network_name}_{self.id}'
 
     @property
-    def container_status(self):
+    def container_status(self) -> str:
         if self._container is None:
             return 'removed'
         else:
@@ -109,7 +109,7 @@ class ServerManager(Serializable):
             # 'restarting', 'running', 'paused', or 'exited'
             return self._container.status
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return {
             **self.config.to_dict(),
             'container': {

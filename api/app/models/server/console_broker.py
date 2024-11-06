@@ -16,11 +16,11 @@ class ConsoleBroker:
         self.socket = socket
 
     # TODO make this function async
-    def start_socket_listener(self):
+    def start_socket_listener(self) -> None:
         loop = asyncio.get_running_loop()
         loop.create_task(asyncio.to_thread(self._socket_listener))
 
-    def _socket_listener(self):
+    def _socket_listener(self) -> None:
         # TODO unblock on exit
         while True:
             if self.socket is None:

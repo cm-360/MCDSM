@@ -1,14 +1,18 @@
+from __future__ import annotations
+
 import os
 import json
 
 from .models import NetworkManager
-from .models import ServerManager
-from .models import ConsoleBroker
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .models import ServerManager
 
 
 class DockerManager:
 
-    def __init__(self, docker_client):
+    def __init__(self, docker_client) -> None:
         # Docker socket client
         self.client = docker_client
         self.prefix = 'mcdsm'
@@ -22,7 +26,7 @@ class DockerManager:
         self.resources_directory_external = os.path.join(cwd, 'shared')
         self.resources_directory_internal = '/resources'
         
-    def load_networks(self):
+    def load_networks(self) -> None:
         self.networks = {}
 
         for entry in os.listdir(self.networks_directory):
@@ -47,4 +51,3 @@ class DockerManager:
 
         server = network.servers.get(server_id, None)
         return server
-

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 import os
 
@@ -5,17 +7,21 @@ from ..base import Serializable
 from ..server.server_manager import ServerManager
 from .network_config import NetworkConfig
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .. import DockerManager
+
 
 class NetworkManager(Serializable):
 
-    def __init__(self, docker_manager, directory: str):
+    def __init__(self, docker_manager: DockerManager, directory: str) -> None:
         self.docker_manager = docker_manager
         self.directory = directory
         self.id = os.path.basename(self.directory)
         self.load_config()
         self.load_servers()
 
-    def load_config(self):
+    def load_config(self) -> None:
         # Read network.json config file
         config_file_path = os.path.join(self.directory, 'network.json')
         with open(config_file_path, 'r') as config_file:
@@ -27,9 +33,7 @@ class NetworkManager(Serializable):
                 display_name=config['display_name'],
             )
 
-            # self.ensure_docker_network(network)
-
-    def load_servers(self):
+    def load_servers(self) -> None:
         self.servers = {}
 
         servers_directory = os.path.join(self.directory, 'servers')
@@ -58,10 +62,10 @@ class NetworkManager(Serializable):
         # network.network_id = docker_network.id
 
     @property
-    def network_name(self):
+    def network_name(self) -> str:
         return f'{self.docker_manager.prefix}_{self.id}'
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return {
             **self.config.to_dict(),
             'network': {
