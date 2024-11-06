@@ -21,7 +21,7 @@ class NetworkManager(Serializable):
         with open(config_file_path, 'r') as config_file:
             config = json.load(config_file)
 
-            # Instantiate Network object from config
+            # Instantiate NetworkConfig object from config
             self.config = NetworkConfig(
                 id=self.id,
                 display_name=config['display_name'],
@@ -42,9 +42,20 @@ class NetworkManager(Serializable):
             if not os.path.isdir(entry_path):
                 continue
 
-            # Load Server instance
+            # Create ServerManager instance
             server = ServerManager(self, entry_path)
             self.servers[server.id] = server
+
+    @property
+    def network(self):
+        pass
+        # docker_networks = self.client.networks.list(names=[docker_network_name])
+        # if len(docker_networks) > 0:
+        #     network.network_id = docker_networks[0].id
+        #     return
+
+        # docker_network = self.client.networks.create(docker_network_name, driver='bridge')
+        # network.network_id = docker_network.id
 
     @property
     def network_name(self):

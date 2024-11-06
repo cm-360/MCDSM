@@ -11,7 +11,7 @@ from quart import render_template
 # Werkzeug
 from werkzeug.exceptions import HTTPException
 
-from .manager import Manager
+from .manager import DockerManager
 
 
 app = Quart(__name__)
@@ -31,7 +31,7 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 @app.route('/api/networks/<network_id>')
 async def api_network_info(network_id: str):
-    network = app.manager.get_network(network_id)
+    network = app.manager.get_network_manager(network_id)
     if network is None:
         return api_error_generic('Not Found', f'Network: {network_id}', 404)
     return network.to_dict()
@@ -40,7 +40,7 @@ async def api_network_info(network_id: str):
 
 @app.route('/api/networks/<network_id>/servers/<server_id>')
 async def api_server_info(network_id: str, server_id: str):
-    server = app.manager.get_server(network_id, server_id)
+    server = app.manager.get_server_manager(network_id, server_id)
     if server is None:
         return api_error_generic('Not Found', f'Network: {network_id}, Server: {server_id}', 404)
     return server.to_dict()
@@ -144,7 +144,7 @@ async def handle_exception(e: Exception):
 async def app_initialize():
     # Create Docker client and container manager
     docker_client = docker.from_env()
-    app.manager = Manager(docker_client)
+    app.manager = DockerManager(docker_client)
     app.manager.load_networks()
 
 @app.after_serving
