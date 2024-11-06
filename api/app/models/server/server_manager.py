@@ -77,7 +77,6 @@ class ServerManager(Serializable):
 
     def start_container(self) -> None:
         self.get_or_create_container().start()
-        # self.attach_socket()
 
     def stop_container(self) -> None:
         if self.container is None:

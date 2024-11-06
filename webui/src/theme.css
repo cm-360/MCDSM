@@ -10,5 +10,29 @@
     --color-secondary: ;
     --color-secondary-alt: ;
 
+    --color-red: #600010;
+    --color-red-alt: #c00020;
+    --color-orange: ;
+    --color-orange-alt: ;
+    --color-yellow: #866c00;
+    --color-yellow-alt: #d4aa00;
+    --color-green: #006040;
+    --color-green-alt: #00b060;
+    --color-teal: ;
+    --color-teal-alt: ;
+    --color-blue: #004080;
+    --color-blue-alt: #0066cc;
+    --color-purple: ;
+    --color-purple-alt: ;
+    --color-pink: ;
+    --color-pink-alt: ;
+
+    --color-positive: var(--color-green);
+    --color-positive-alt: var(--color-green-alt);
+    --color-warning: var(--color-yellow);
+    --color-warning-alt: var(--color-yellow-alt);
+    --color-negative: var(--color-red);
+    --color-negative-alt: var(--color-red-alt);
+
     --transition-time: 0.3s;
 }

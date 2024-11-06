@@ -18,3 +18,7 @@
     align-items: baseline;
     gap: 0.5em;
 }
+
+.server-actions .button {
+    min-width: 6em;
+}
