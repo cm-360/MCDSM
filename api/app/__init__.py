@@ -6,8 +6,6 @@ from traceback import format_exception
 import docker
 # Quart
 from quart import Quart
-from quart import websocket
-from quart import render_template
 # Werkzeug
 from werkzeug.exceptions import HTTPException
 
