@@ -34,6 +34,16 @@ async def api_network_info(network_id: str):
         return api_error_generic('Not Found', f'Network: {network_id}', 404)
     return network.to_dict()
 
+@app.route('/api/networks/<network_id>/servers')
+async def api_network_servers(network_id: str):
+    network = app.manager.get_network_manager(network_id)
+    if network is None:
+        return api_error_generic('Not Found', f'Network: {network_id}', 404)
+    return [{
+        'id': s.id,
+        'display_name': s.config.display_name,
+    } for s in network.servers.values()]
+
 # Servers
 
 @app.route('/api/networks/<network_id>/servers/<server_id>')
@@ -124,8 +134,8 @@ async def handle_exception(e: Exception):
     - e (Exception): The uncaught exception
     """
     # Pass through HTTP errors
-    if isinstance(e, HTTPException):
-        return e
+    # if isinstance(e, HTTPException):
+    #     return e
 
     # Log exception and traceback
     app.logger.error('Uncaught exception')
