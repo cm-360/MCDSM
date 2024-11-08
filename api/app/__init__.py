@@ -160,7 +160,6 @@ async def app_initialize() -> None:
     # Create Docker client and container manager
     docker_client = docker.from_env()
     app.manager = DockerManager(docker_client)
-    app.manager.load_networks()
 
 @app.after_serving
 async def app_cleanup() -> None:

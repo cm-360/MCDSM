@@ -5,6 +5,8 @@ from functools import wraps
 from docker.errors import NotFound
 
 from ..base import Serializable
+from ..resource.collection import Collection
+from ..resource.resource import Resource
 from .server_config import ServerConfig
 from .console_broker import ConsoleBroker
 
@@ -40,9 +42,59 @@ class ServerManager(Serializable):
                 resources=config['resources'],
             )
 
+            self.load_resources(config['resources'])
+
+    def load_resources(self, resources_config) -> None:
+        self.collections = {}
+
+        for collection_id, collection_data in resources_config.items():
+            shared_collection = self.network.docker_manager.collections[collection_id]
+
+            # Use values from config or global defaults
+            display_name = collection_data.get('display_name', shared_collection.display_name)
+            path = collection_data.get('path', shared_collection.path)
+            extension = collection_data.get('extension', shared_collection.extension)
+
+            included_resources = collection_data.get('include', [])
+
+            # Create Resource instances for included resources
+            resources = [
+                Resource(
+                    name=resource_data['name'],
+                    version=resource_data['version'],
+                )
+                for resource_data in included_resources
+            ]
+
+            # Create Collection instance
+            collection = Collection(
+                id=collection_id,
+                display_name=display_name,
+                path=path,
+                extension=extension,
+                resources=resources,
+            )
+            self.collections[collection_id] = collection
+
+    def create_resource_links(self, source: str, destination: str):
+        for collection in self.collections.values():
+            # Collection location (outside server container)
+            collection_destination = os.path.join(destination, collection.path)
+
+            for resource in collection.resources:
+                resource_filename = f'{resource.name}_{resource.version}{collection.extension}'
+
+                # Link source location (inside server container)
+                link_source = os.path.join(source, collection.id, resource_filename)
+                # Link destination location (outside server container)
+                link_destination = os.path.join(collection_destination, resource_filename)
+                os.symlink(link_source, link_destination)
+
     def get_or_create_container(self):
         if self.container is None:
             self.create_container()
+
+        # TODO re-create container if removed while api running
 
         return self.container
 
@@ -52,6 +104,9 @@ class ServerManager(Serializable):
         data_directory_internal = self.network.docker_manager.data_directory_internal
         resources_directory_external = self.network.docker_manager.resources_directory_external
         resources_directory_internal = self.network.docker_manager.resources_directory_internal
+
+        # TODO run on every container start (refactor volume directories)
+        self.create_resource_links(resources_directory_internal, data_directory_external)
 
         # Path to JAR executable inside container
         jar_executable_path = os.path.join(resources_directory_internal, 'software', self.config.jar_executable)
@@ -122,4 +177,5 @@ class ServerManager(Serializable):
                 'name': self.container_name,
                 'status': self.container_status,
             },
+            'resources': self.collections,
         }

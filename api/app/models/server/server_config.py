@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from ..base import Serializable
+from ..resource.collection import Collection
 
 
 @dataclass
@@ -15,4 +16,4 @@ class ServerConfig(Serializable):
     jvm_arguments: list[str]
     jar_executable: str
     jar_arguments: list[str]
-    resources: str
+    resources: list[Collection]
