@@ -10,3 +10,5 @@ class NetworkConfig(Serializable):
 
     # Config from network.json
     display_name: str
+    subnet: str
+    gateway: str

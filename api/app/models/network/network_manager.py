@@ -3,6 +3,10 @@ from __future__ import annotations
 import json
 import os
 
+from docker.errors import NotFound
+from docker.types import IPAMConfig
+from docker.types import IPAMPool
+
 from ..base import Serializable
 from ..server.server_manager import ServerManager
 from .network_config import NetworkConfig
@@ -18,6 +22,9 @@ class NetworkManager(Serializable):
         self.docker_manager = docker_manager
         self.directory = directory
         self.id = os.path.basename(self.directory)
+        # Docker
+        self._network = None
+
         self.load_config()
         self.load_servers()
 
@@ -31,6 +38,8 @@ class NetworkManager(Serializable):
             self.config = NetworkConfig(
                 id=self.id,
                 display_name=config['display_name'],
+                subnet=config['subnet'],
+                gateway=config['gateway'],
             )
 
     def load_servers(self) -> None:
@@ -50,16 +59,39 @@ class NetworkManager(Serializable):
             server = ServerManager(self, entry_path)
             self.servers[server.id] = server
 
+    def get_or_create_network(self):
+        if self.network is None:
+            self.create_network()
+
+        # TODO re-create network if removed while api running
+
+        return self.network
+
+    def create_network(self):
+        ipam_pool = IPAMPool(
+            subnet=self.config.subnet,
+            gateway=self.config.gateway,
+        )
+
+        ipam_config = IPAMConfig(pool_configs=[ipam_pool])
+
+        self._network = self.docker_manager.client.networks.create(
+            self.network_name,
+            driver='bridge',
+            ipam=ipam_config,
+        )
+
     @property
     def network(self):
-        pass
-        # docker_networks = self.client.networks.list(names=[docker_network_name])
-        # if len(docker_networks) > 0:
-        #     network.network_id = docker_networks[0].id
-        #     return
+        if self._network is None:
+            try:
+                docker_networks = self.docker_manager.client.networks.list(names=[self.network_name])
+                if len(docker_networks) > 0:
+                    self._network = docker_networks[0]
+            except NotFound:
+                return None
 
-        # docker_network = self.client.networks.create(docker_network_name, driver='bridge')
-        # network.network_id = docker_network.id
+        return self._network
 
     @property
     def network_name(self) -> str:

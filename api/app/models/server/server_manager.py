@@ -40,6 +40,8 @@ class ServerManager(Serializable):
                 jar_executable=config['jar_executable'],
                 jar_arguments=config['jar_arguments'],
                 resources=config['resources'],
+                ip_address=config['ip_address'],
+                ports=config.get('ports', {}),
             )
 
             self.load_resources(config['resources'])
@@ -113,6 +115,15 @@ class ServerManager(Serializable):
 
         # TODO pull image if needed
 
+        # Networking config
+        self.network.get_or_create_network()
+        endpoint_config = self.network.docker_manager.client.api.create_endpoint_config(
+            ipv4_address=self.config.ip_address,
+        )
+        networking_config = self.network.docker_manager.client.api.create_networking_config({
+            self.network.network_name: endpoint_config,
+        })
+
         # Create server container
         self._container = self.network.docker_manager.client.containers.create(
             self.config.jvm_image,
@@ -124,6 +135,8 @@ class ServerManager(Serializable):
             ],
             working_dir=data_directory_internal,
             network=self.network.network_name,
+            networking_config=networking_config,
+            ports=self.config.ports,
             user=1000,
             stdin_open=True,
             tty=True,

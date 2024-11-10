@@ -17,3 +17,5 @@ class ServerConfig(Serializable):
     jar_executable: str
     jar_arguments: list[str]
     resources: list[Collection]
+    ip_address: str
+    ports: dict
