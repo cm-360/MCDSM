@@ -23,6 +23,7 @@ class ServerManager(Serializable):
         self.console = ConsoleBroker(self)
         # Load JSON config
         self.load_config()
+        self.load_resources()
 
     def load_config(self) -> None:
         # Read server.json config file
@@ -33,23 +34,21 @@ class ServerManager(Serializable):
             # Instantiate ServerConfig object from config
             self.config = ServerConfig(
                 id=self.id,
-                display_name=config['display_name'],
-                template=config['template'],
+                display_name=config.get('display_name', self.id),
+                template=config.get('template', False),
                 jvm_image=config['jvm_image'],
-                jvm_arguments=config['jvm_arguments'],
+                jvm_arguments=config.get('jvm_arguments', []),
                 jar_executable=config['jar_executable'],
-                jar_arguments=config['jar_arguments'],
-                resources=config['resources'],
+                jar_arguments=config.get('jar_arguments', []),
+                resources=config.get('resources', {}),
                 ip_address=config['ip_address'],
                 ports=config.get('ports', {}),
             )
 
-            self.load_resources(config['resources'])
-
-    def load_resources(self, resources_config) -> None:
+    def load_resources(self) -> None:
         self.collections = {}
 
-        for collection_id, collection_data in resources_config.items():
+        for collection_id, collection_data in self.config.resources.items():
             shared_collection = self.network.docker_manager.collections[collection_id]
 
             # Use values from config or global defaults
@@ -90,7 +89,11 @@ class ServerManager(Serializable):
                 link_source = os.path.join(source, collection.id, resource_filename)
                 # Link destination location (outside server container)
                 link_destination = os.path.join(collection_destination, resource_filename)
-                os.symlink(link_source, link_destination)
+                try:
+                    os.symlink(link_source, link_destination)
+                except FileExistsError:
+                    # TODO check and replace link if incorrect
+                    pass
 
     def get_or_create_container(self):
         if self.container is None:
@@ -101,17 +104,8 @@ class ServerManager(Serializable):
         return self.container
 
     def create_container(self) -> None:
-        # Volume directories
-        data_directory_external = os.path.join(self.network.directory, 'servers', self.id, 'data')
-        data_directory_internal = self.network.docker_manager.data_directory_internal
-        resources_directory_external = self.network.docker_manager.resources_directory_external
-        resources_directory_internal = self.network.docker_manager.resources_directory_internal
-
-        # TODO run on every container start (refactor volume directories)
-        self.create_resource_links(resources_directory_internal, data_directory_external)
-
         # Path to JAR executable inside container
-        jar_executable_path = os.path.join(resources_directory_internal, 'software', self.config.jar_executable)
+        jar_executable_path = os.path.join(self.resources_directory_internal, 'software', self.config.jar_executable)
 
         # TODO pull image if needed
 
@@ -130,10 +124,10 @@ class ServerManager(Serializable):
             command=['java', *self.config.jvm_arguments, '-jar', jar_executable_path, *self.config.jar_arguments],
             name=self.container_name,
             volumes=[
-                f'{data_directory_external}:{data_directory_internal}:rw',
-                f'{resources_directory_external}:{resources_directory_internal}:ro'
+                f'{self.data_directory_external}:{self.data_directory_internal}:rw',
+                f'{self.resources_directory_external}:{self.resources_directory_internal}:ro'
             ],
-            working_dir=data_directory_internal,
+            working_dir=self.data_directory_internal,
             network=self.network.network_name,
             networking_config=networking_config,
             ports=self.config.ports,
@@ -144,6 +138,7 @@ class ServerManager(Serializable):
         )
 
     def start_container(self) -> None:
+        self.create_resource_links(self.resources_directory_internal, self.data_directory_external)
         self.get_or_create_container().start()
 
     def stop_container(self) -> None:
@@ -182,6 +177,22 @@ class ServerManager(Serializable):
             self._socket = self.container.attach_socket(params={'stdin': True, 'stdout': True, 'stderr': True, 'stream': True})
 
         return self._socket
+
+    @property
+    def data_directory_external(self) -> str:
+        return os.path.join(self.network.directory, 'servers', self.id, 'data')
+
+    @property
+    def data_directory_internal(self) -> str:
+        return self.network.docker_manager.data_directory_internal
+
+    @property
+    def resources_directory_external(self) -> str:
+        return self.network.docker_manager.resources_directory_external
+
+    @property
+    def resources_directory_internal(self) -> str:
+        return self.network.docker_manager.resources_directory_internal
 
     def to_dict(self) -> dict:
         return {
