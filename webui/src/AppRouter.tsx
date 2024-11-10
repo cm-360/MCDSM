@@ -13,18 +13,18 @@ import SettingsView from './views/settings/SettingsView';
 function AppRouter() {
   const router = createBrowserRouter(
     createRoutesFromElements(
-        <Route path='/' element={<App />}>
-          <Route path='' element={<DashboardView />} />
-          <Route path='servers'>
-            <Route path='' element={<ServersView />} />
-            <Route path=':serverId' element={<ServerView />}>
-              <Route path='' element={<ServerOverview />} />
-              <Route path='console' element={<ServerConsole />} />
-            </Route>
+      <Route path='/' element={<App />}>
+        <Route path='' element={<DashboardView />} />
+        <Route path='servers'>
+          <Route path='' element={<ServersView />} />
+          <Route path=':serverId' element={<ServerView />}>
+            <Route path='' element={<ServerOverview />} />
+            <Route path='console' element={<ServerConsole />} />
           </Route>
-          <Route path='resources' element={<ResourcesView />} />
-          <Route path='settings' element={<SettingsView />} />
         </Route>
+        <Route path='resources' element={<ResourcesView />} />
+        <Route path='settings' element={<SettingsView />} />
+      </Route>
     )
   );
 
