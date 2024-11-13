@@ -86,9 +86,11 @@ async def api_server_console(network_id: str, server_id: str):
     if server is None:
         return api_error_generic('Not Found', f'Network: {network_id}, Server: {server_id}', 404)
 
+    include_logs = bool(websocket.args.get('include_logs', False))
+
     try:
         task = asyncio.ensure_future(_receive(server.console))
-        async for data in server.console.subscribe():
+        async for data in server.console.subscribe(include_logs=include_logs):
             await websocket.send(data)
     finally:
         task.cancel()

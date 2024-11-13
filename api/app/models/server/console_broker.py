@@ -35,12 +35,16 @@ class ConsoleBroker:
         os.write(self.server_manager.socket.fileno(), command.encode('utf-8'))
         self.server_manager.socket.flush()
 
-    async def subscribe(self) -> AsyncGenerator[str, None]:
+    async def subscribe(self, include_logs: bool=False) -> AsyncGenerator[str, None]:
         if self.listener_task is None:
             self.start_socket_listener()
 
         connection = asyncio.Queue()
         self.connections.add(connection)
+
+        if include_logs:
+            yield self.server_manager.container.logs().decode('utf-8')
+
         try:
             while True:
                 yield await connection.get()

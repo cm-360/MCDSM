@@ -11,11 +11,14 @@ function ServerConsole() {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [consoleText, setConsoleText] = useState('');
 
-  const connectWebSocket = useCallback(() => {
-    socket?.close();
+  const connectWebSocket = useCallback((includeLogs=false) => {
+    const socketUrl = `${API_BASE_URL}/networks/${networkId}/servers/${serverInfo.id}/console?include_logs=${includeLogs}`;
+    const newSocket = new WebSocket(socketUrl);
 
-    const newSocket = new WebSocket(`${API_BASE_URL}/networks/${networkId}/servers/${serverInfo.id}/console`);
-    console.log(`Connected WebSocket for ${serverInfo.id}`);
+    newSocket.addEventListener('open', () => {
+      console.log(`Connected WebSocket for ${serverInfo.id}`);
+      setConsoleText("");
+    })
 
     newSocket.addEventListener('message', (event) => {
       const message = event.data;
@@ -28,18 +31,28 @@ function ServerConsole() {
 
     newSocket.addEventListener('error', (event) => {
       console.log(event);
-      console.error(`Error in WebSocket for ${serverInfo.id}, reconnecting in 3s...`);
-      setTimeout(connectWebSocket, 3000);
+      console.error(`Error in WebSocket for ${serverInfo.id}`);
+
+      if (socket === newSocket) {
+        console.log('Reconnecting in 3s...')
+        setTimeout(() => connectWebSocket(false), 3000);
+      }
     });
 
     setSocket((oldSocket) => {
       oldSocket?.close();
       return newSocket;
     });
+
+    return newSocket;
   }, [serverInfo]);
 
   useEffect(() => {
-    connectWebSocket();
+    const socket = connectWebSocket(true);
+
+    return () => {
+      socket.close();
+    }
   }, [serverInfo, shouldUpdate]);
 
   const sendCommand = useCallback(async (event: React.FormEvent) => {
@@ -52,6 +65,7 @@ function ServerConsole() {
 
     if (socket.readyState === WebSocket.CLOSED) {
       window.alert('Console socket is currently closed');
+      connectWebSocket(false);
       return;
     }
 
