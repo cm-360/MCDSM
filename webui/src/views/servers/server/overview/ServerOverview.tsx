@@ -4,7 +4,7 @@ import './ServerOverview.css';
 import { useServerContext } from '../ServerView';
 
 function ServerOverview() {
-  const { serverInfo } = useServerContext();
+  const { serverInfo: _serverInfo } = useServerContext();
 
   return (
     <>
