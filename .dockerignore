@@ -1,0 +1,14 @@
+# Ignore everything by default
+*
+
+# Docker
+!.dockerignore
+!Dockerfile
+
+# API
+!api/app/
+!api/requirements.txt
+**/__pycache__
+
+# Frontend
+!webui/build/
