@@ -147,6 +147,20 @@ class ServerManager(Serializable):
 
         self.container.stop()
 
+    def connect_socket(self) -> None:
+        self.close_socket()
+
+        self._socket = self.container.attach_socket(params={
+            'stdin': True,
+            'stdout': True,
+            'stderr': True,
+            'stream': True,
+        })
+
+    def close_socket(self) -> None:
+        if self._socket is not None:
+            self._socket.close()
+
     @property
     def container(self):
         if self._container is None:
@@ -174,7 +188,7 @@ class ServerManager(Serializable):
     @property
     def socket(self):
         if self._socket is None:
-            self._socket = self.container.attach_socket(params={'stdin': True, 'stdout': True, 'stderr': True, 'stream': True})
+            self.connect_socket()
 
         return self._socket
 

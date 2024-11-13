@@ -166,9 +166,7 @@ async def app_cleanup() -> None:
     # Close server sockets
     for network in app.manager.networks.values():
         for server in network.servers.values():
-            socket = server._console.socket
-            if socket is not None:
-                socket.close()
+            server.close_socket()
 
 
 # Development entrypoint

@@ -33,6 +33,7 @@ class ConsoleBroker:
         if self.server_manager.socket is None:
             return  # TODO error
         os.write(self.server_manager.socket.fileno(), command.encode('utf-8'))
+        self.server_manager.socket.flush()
 
     async def subscribe(self) -> AsyncGenerator[str, None]:
         if self.listener_task is None:

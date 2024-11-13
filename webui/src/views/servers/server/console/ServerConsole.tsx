@@ -50,6 +50,11 @@ function ServerConsole() {
       return;
     }
 
+    if (socket.readyState === WebSocket.CLOSED) {
+      window.alert('Console socket is currently closed');
+      return;
+    }
+
     const form = event.currentTarget as HTMLFormElement;
     const formData = new FormData(form);
 
