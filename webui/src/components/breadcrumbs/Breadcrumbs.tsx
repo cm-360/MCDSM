@@ -8,7 +8,7 @@ export interface Crumb {
 }
 
 const crumbDisplayNames: Record<string, string> = {
-  '/': 'Dashboard',
+  '/dashboard': 'Dashboard',
   '/servers': 'Servers',
   '/resources': 'Resources',
   '/settings': 'Settings',
@@ -24,10 +24,10 @@ function pushIfUnique(crumbs: Crumb[], newCrumb: Crumb) {
 }
 
 function crumbsReducer(crumbs: Crumb[], match: UIMatch) {
-  const { id, pathname } = match;
+  const { pathname } = match;
 
   // Skip first match (index)
-  if ('0' == id) {
+  if ('/' === pathname) {
     return crumbs;
   }
 
@@ -52,6 +52,8 @@ function crumbsReducer(crumbs: Crumb[], match: UIMatch) {
 
 function Breadcrumbs() {
   const matches = useMatches();
+
+  console.log(matches);
 
   // Build the breadcrumb elements from path matches
   const crumbLinks = matches
