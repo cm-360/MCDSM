@@ -53,8 +53,6 @@ function crumbsReducer(crumbs: Crumb[], match: UIMatch) {
 function Breadcrumbs() {
   const matches = useMatches();
 
-  console.log(matches);
-
   // Build the breadcrumb elements from path matches
   const crumbLinks = matches
     .reduce(crumbsReducer, [])
