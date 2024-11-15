@@ -198,4 +198,7 @@ async def app_cleanup() -> None:
 
 # Development entrypoint
 def run() -> None:
+    from dotenv import load_dotenv
+    load_dotenv()
+
     app.run()
