@@ -9,8 +9,8 @@ services:
       - 8000:8000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./api/app/networks:/networks
-      - ./api/app/resources:/resources
+      - ./networks:/networks
+      - ./resources:/resources
     environment:
       - NETWORKS_DIR=/networks
       - RESOURCES_DIR=/resources

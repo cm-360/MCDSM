@@ -1,7 +1,3 @@
-# Server data/config
-networks/
-shared/
-
 # Environment config
 .env
 
