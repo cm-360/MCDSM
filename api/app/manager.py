@@ -18,13 +18,10 @@ class DockerManager:
         self.client = docker_client
         self.prefix = 'mcdsm'
 
-        # TODO: use env config instead of cwd
-        cwd = os.getcwd()
-
         # Volume directories
-        self.networks_directory = os.path.join(cwd, 'networks')
+        self.networks_directory = os.getenv('NETWORKS_DIR', os.path.join(os.getcwd(), 'networks'))
         self.data_directory_internal = '/data'
-        self.resources_directory_external = os.path.join(cwd, 'shared')
+        self.resources_directory_external = os.getenv('RESOURCES_DIR', os.path.join(os.getcwd(), 'shared'))
         self.resources_directory_internal = '/resources'
 
         self.load_resources()

@@ -11,4 +11,4 @@
 **/__pycache__
 
 # Frontend
-!webui/build/
+!webui/dist/

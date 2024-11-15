@@ -1,11 +1,13 @@
 import asyncio
 import os
+from pathlib import Path
 from traceback import format_exception
 
 # Docker client
 import docker
 # Quart
 from quart import Quart
+from quart import send_from_directory
 from quart import websocket
 # Werkzeug
 from werkzeug.exceptions import HTTPException
@@ -13,7 +15,9 @@ from werkzeug.exceptions import HTTPException
 from .manager import DockerManager
 
 
-app = Quart(__name__)
+app = Quart(__name__,
+    static_folder='webui',
+)
 
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 
@@ -96,6 +100,26 @@ async def api_server_console(network_id: str, server_id: str):
         task.cancel()
         await task
 
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+async def serve(path: str):
+    """
+    Serves the web interface's static build files.
+
+    If a specific path is provided and the corresponding file exists in the static
+    folder, it serves that file. Otherwise, serves `index.html`.
+
+    Parameters:
+    - path (str): The path to the static file.
+
+    See Also:
+    - https://stackoverflow.com/a/45634550
+    """
+    if path != '' and Path(app.static_folder, path).exists():
+        return await send_from_directory(app.static_folder, path)
+    else:
+        return await send_from_directory(app.static_folder, 'index.html')
+
 
 ########## Error Handling ##########
 
@@ -143,8 +167,9 @@ async def handle_exception(e: Exception):
     - e (Exception): The uncaught exception
     """
     # Pass through HTTP errors
-    # if isinstance(e, HTTPException):
-    #     return e
+    # TODO unless on an API route
+    if isinstance(e, HTTPException):
+        return e
 
     # Log exception and traceback
     app.logger.error('Uncaught exception')

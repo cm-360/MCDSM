@@ -11,7 +11,7 @@ RUN pip3 install -r requirements.txt
 # Copy Quart app files into container
 COPY api/app/ app/
 # Copy Vite build files into Quart's static folder
-# COPY webui/dist/ app/static/
+COPY webui/dist/ app/webui/
 
 EXPOSE 8000
 
