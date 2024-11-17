@@ -59,8 +59,8 @@ export default function ServerView() {
 
   const isRunning = 'running' === serverInfo.container.status;
 
-  const runningStatus = <span className='server-status' style={{ color: 'var(--color-positive-alt)' }}><i className='bi bi-check-circle' /> Running</span>;
-  const stoppedStatus = <span className='server-status' style={{ color: 'var(--color-negative-alt)' }}><i className='bi bi-x-circle' /> Stopped</span>;
+  const runningStatus = <span className='server-status running'><i className='bi bi-check-circle' /> Running</span>;
+  const stoppedStatus = <span className='server-status stopped'><i className='bi bi-x-circle' /> Stopped</span>;
 
   const startButton = <button className='button button-success' onClick={startServer}><i className='bi bi-play' /> Start</button>;
   const stopButton = <button className='button button-danger' onClick={stopServer}><i className='bi bi-stop' /> Stop</button>;

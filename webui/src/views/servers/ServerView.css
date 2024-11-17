@@ -9,6 +9,14 @@
     gap: 1em;
 }
 
+.server-status.running {
+    color: var(--color-positive-alt);
+}
+
+.server-status.stopped {
+    color: var(--color-negative-alt);
+}
+
 .server-actions .button {
     min-width: 6em;
     margin-left: 0.5em;
