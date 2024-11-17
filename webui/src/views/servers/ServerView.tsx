@@ -5,6 +5,7 @@ import { ServerInfo } from '../../types';
 
 import './ServerView.css';
 import { useNetworkContext } from '../networks/NetworkView';
+import SectionHeader from '../../components/section-heading/SectionHeader';
 
 export interface ServerContextType {
   serverInfo: ServerInfo;
@@ -66,18 +67,20 @@ export default function ServerView() {
 
   return (
     <ServerContext.Provider value={{ serverInfo, shouldUpdate, requestUpdate }}>
-      <header className='server-view-header container-md'>
-        <div className='server-details'>
-          <h2 className='server-title'>{serverInfo.display_name}</h2>
-          {isRunning ? runningStatus : stoppedStatus}
-          <span className='server-players'><i className='bi bi-person' /> 0 Players</span>
+      <SectionHeader>
+        <div className='server-view-header'>
+          <span className='server-details'>
+            <h2 className='server-title'>{serverInfo.display_name}</h2>
+            {isRunning ? runningStatus : stoppedStatus}
+            <span className='server-players'><i className='bi bi-person' /> 0 Players</span>
+          </span>
+          <span className='server-actions'>
+            {isRunning ? stopButton : startButton}
+            <button className='button'><i className='bi bi-arrow-clockwise' /> Restart</button>
+            <button className='button button-danger' onClick={stopServer}><i className='bi bi-x-lg' /> Terminate</button>
+          </span>
         </div>
-        <div className='server-actions'>
-          {isRunning ? stopButton : startButton}
-          <button className='button'><i className='bi bi-arrow-clockwise' /> Restart</button>
-          <button className='button button-danger' onClick={stopServer}><i className='bi bi-x-lg' /> Terminate</button>
-        </div>
-      </header>
+      </SectionHeader>
       <Outlet />
     </ServerContext.Provider>
   );

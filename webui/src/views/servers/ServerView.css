@@ -1,5 +1,6 @@
 .server-view-header {
     display: flex;
+    justify-content: space-between;
 }
 
 .server-details {
@@ -8,17 +9,7 @@
     gap: 1em;
 }
 
-.server-title {
-    display: inline;
-}
-
-.server-actions {
-    margin-left: auto;
-    display: flex;
-    align-items: baseline;
-    gap: 0.5em;
-}
-
 .server-actions .button {
     min-width: 6em;
+    margin-left: 0.5em;
 }
