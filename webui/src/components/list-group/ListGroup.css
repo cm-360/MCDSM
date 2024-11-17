@@ -1,0 +1,25 @@
+.list-group {
+    padding: 0;
+    list-style: none;
+    background-color: var(--color-neutral);
+    border: 1px solid var(--color-neutral-alt);
+    border-radius: 0.5rem;
+    overflow: auto;
+}
+
+.list-group-item > * {
+    padding: 0.5rem;
+}
+
+.list-group-item:not(:last-child) {
+    border-bottom: 1px solid var(--color-neutral-alt);
+}
+
+.list-group-item > a {
+    display: block;
+    transition: background-color var(--transition-time);
+}
+
+.list-group-item > a:hover {
+    background-color: var(--color-neutral-alt);
+}
