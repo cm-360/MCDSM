@@ -1,9 +1,10 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { Outlet, useParams } from 'react-router-dom';
-import { API_BASE_URL } from '../../../constants';
-import { ServerInfo } from '../../../types';
+import { API_BASE_URL } from '../../constants';
+import { ServerInfo } from '../../types';
 
 import './ServerView.css';
+import { useNetworkContext } from '../networks/NetworkView';
 
 export interface ServerContextType {
   serverInfo: ServerInfo;
@@ -14,11 +15,11 @@ export interface ServerContextType {
 const ServerContext = createContext<ServerContextType | null>(null);
 export const useServerContext = () => useContext(ServerContext) as ServerContextType;
 
-const networkId = 'example';
-
-function ServerView() {
+export default function ServerView() {
+  const { networkInfo } = useNetworkContext();
   const { serverId } = useParams();
-  const serverApiUrlBase = `${API_BASE_URL}/networks/${networkId}/servers/${serverId}`;
+
+  const serverApiUrlBase = `${API_BASE_URL}/networks/${networkInfo.id}/servers/${serverId}`;
 
   const [shouldUpdate, setShouldUpdate] = useState(0);
   const requestUpdate = useCallback(() => {
@@ -81,5 +82,3 @@ function ServerView() {
     </ServerContext.Provider>
   );
 }
-
-export default ServerView;

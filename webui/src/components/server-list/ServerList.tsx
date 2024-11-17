@@ -1,10 +1,13 @@
 import { Link } from 'react-router-dom';
-import { useNetworkContext } from '../../views/networks/network/NetworkView';
+import { ServerPeekInfo } from '../../types';
 
-export default function ServerList() {
-  const { networkInfo, servers } = useNetworkContext();
+export interface ServerListProps {
+  networkId: string;
+  servers: ServerPeekInfo[];
+}
 
+export default function ServerList({ networkId, servers }: ServerListProps) {
   return servers.map((server) => (
-    <Link key={server.id} to={`/networks/${networkInfo.id}/servers/${server.id}`}>{server.display_name}</Link>
+    <Link key={server.id} to={`/networks/${networkId}/servers/${server.id}`}>{server.display_name}</Link>
   ));
 }

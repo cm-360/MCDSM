@@ -7,7 +7,7 @@ import { API_BASE_URL } from '../../constants';
 
 const networkId = 'example';
 
-function ServersView() {
+function ServerListView() {
   const [servers, setServers] = useState<ServerPeekInfo[]>([]);
 
   const fetchServers = useCallback(() => {
@@ -31,4 +31,4 @@ function ServersView() {
   );
 }
 
-export default ServersView;
+export default ServerListView;

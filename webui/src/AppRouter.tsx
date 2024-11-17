@@ -3,14 +3,14 @@ import { createBrowserRouter, createRoutesFromElements, Navigate, Route, RouterP
 import App from './App';
 
 import DashboardView from './views/dashboard/DashboardView';
-import NetworksView from './views/networks/NetworksView';
-import ServersView from './views/servers/ServersView';
-import ServerView from './views/servers/server/ServerView';
-import ServerOverview from './views/servers/server/overview/ServerOverview';
-import ServerConsole from './views/servers/server/console/ServerConsole';
+import NetworkListView from './views/networks/NetworkListView';
+import ServerListView from './views/servers/ServerListView';
+import ServerView from './views/servers/ServerView';
+import ServerOverview from './views/servers/overview/ServerOverview';
+import ServerConsole from './views/servers/console/ServerConsole';
 import ResourcesView from './views/resources/ResourcesView';
 import SettingsView from './views/settings/SettingsView';
-import NetworkView from './views/networks/network/NetworkView';
+import NetworkView from './views/networks/NetworkView';
 
 export default function AppRouter() {
   const router = createBrowserRouter(
@@ -19,11 +19,10 @@ export default function AppRouter() {
         <Route path='' element={<Navigate to='/dashboard' />} />
         <Route path='dashboard' element={<DashboardView />} />
         <Route path='networks'>
-          <Route path='' element={<NetworksView />} />
-          <Route path=':networkId'>
-            <Route path='' element={<NetworkView />} />
+          <Route path='' element={<NetworkListView />} />
+          <Route path=':networkId' element={<NetworkView />}>
             <Route path='servers'>
-              <Route path='' element={<ServersView />} />
+              <Route path='' element={<ServerListView />} />
               <Route path=':serverId' element={<ServerView />}>
                 <Route path='' element={<ServerOverview />} />
                 <Route path='console' element={<ServerConsole />} />

@@ -1,18 +1,20 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useServerContext } from '../ServerView';
 import './ServerConsole.css';
-import { API_BASE_URL } from '../../../../constants';
+import { API_BASE_URL } from '../../../constants';
+import { useNetworkContext } from '../../networks/NetworkView';
 
-const networkId = 'example';
-
-function ServerConsole() {
+export default function ServerConsole() {
+  const { networkInfo } = useNetworkContext();
   const { serverInfo, shouldUpdate } = useServerContext();
 
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [consoleText, setConsoleText] = useState('');
 
+  const socketBaseUrl = `${API_BASE_URL}/networks/${networkInfo.id}/servers/${serverInfo.id}/console`;
+
   const connectWebSocket = useCallback((includeLogs=false) => {
-    const socketUrl = `${API_BASE_URL}/networks/${networkId}/servers/${serverInfo.id}/console?include_logs=${includeLogs}`;
+    const socketUrl = `${socketBaseUrl}?include_logs=${includeLogs}`;
     const newSocket = new WebSocket(socketUrl);
 
     newSocket.addEventListener('open', () => {
@@ -98,5 +100,3 @@ function ServerConsole() {
     </div>
   );
 }
-
-export default ServerConsole;
