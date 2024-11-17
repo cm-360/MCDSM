@@ -8,9 +8,9 @@ const appViews = [
     path: '/dashboard',
   },
   {
-    name: 'Servers',
+    name: 'Networks',
     icon: 'hdd-stack',
-    path: '/servers',
+    path: '/networks',
   },
   {
     name: 'Resources',

@@ -1,3 +1,14 @@
+export interface NetworkPeekInfo {
+  id: string;
+  display_name: string;
+}
+
+export interface NetworkInfo {
+  id: string;
+  // From NetworkConfig
+  display_name: string;
+}
+
 export interface ServerPeekInfo {
   id: string;
   display_name: string;

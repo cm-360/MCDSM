@@ -9,7 +9,7 @@ export interface Crumb {
 
 const crumbDisplayNames: Record<string, string> = {
   '/dashboard': 'Dashboard',
-  '/servers': 'Servers',
+  '/networks': 'Networks',
   '/resources': 'Resources',
   '/settings': 'Settings',
 };
@@ -41,7 +41,7 @@ function crumbsReducer(crumbs: Crumb[], match: UIMatch) {
 
   // Try generating crumb name from path
   const prevCrumb = crumbs[crumbs.length - 1];
-  const trimmedPath = pathname.replace(prevCrumb.path, '').replace('/', '').trim();
+  const trimmedPath = pathname.replace(prevCrumb?.path, '').replace('/', '').trim();
   if (!trimmedPath) {
     return crumbs;
   }

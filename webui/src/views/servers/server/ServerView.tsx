@@ -24,6 +24,7 @@ function ServerView() {
   const requestUpdate = useCallback(() => {
     setShouldUpdate(Date.now());
   }, []);
+
   const [serverInfo, setServerInfo] = useState<ServerInfo | null>(null);
 
   const fetchServerInfo = useCallback(() => {

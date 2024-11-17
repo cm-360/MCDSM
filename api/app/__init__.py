@@ -32,6 +32,13 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 # Networks
 
+@app.route('/api/networks')
+async def api_networks():
+    return [{
+        'id': n.id,
+        'display_name': n.config.display_name,
+    } for n in app.manager.networks.values()]
+
 @app.route('/api/networks/<network_id>')
 async def api_network_info(network_id: str):
     network = app.manager.get_network_manager(network_id)
