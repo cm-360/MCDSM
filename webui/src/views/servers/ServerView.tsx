@@ -6,6 +6,7 @@ import { ServerInfo } from '../../types';
 import './ServerView.css';
 import { useNetworkContext } from '../networks/NetworkView';
 import SectionHeader from '../../components/section-heading/SectionHeader';
+import LoadingDots from '../../components/loading-dots/LoadingDots';
 
 export interface ServerContextType {
   serverInfo: ServerInfo;
@@ -53,8 +54,7 @@ export default function ServerView() {
   }, []);
 
   if (!serverInfo) {
-    // TODO loading
-    return <></>;
+    return <div className='container-md'><LoadingDots /></div>;
   }
 
   const isRunning = 'running' === serverInfo.container.status;
