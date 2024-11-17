@@ -11,6 +11,7 @@ import ServerConsole from './views/servers/console/ServerConsole';
 import ResourcesView from './views/resources/ResourcesView';
 import SettingsView from './views/settings/SettingsView';
 import NetworkView from './views/networks/NetworkView';
+import NetworkOverview from './views/networks/overview/NetworkOverview';
 
 export default function AppRouter() {
   const router = createBrowserRouter(
@@ -21,6 +22,7 @@ export default function AppRouter() {
         <Route path='networks'>
           <Route path='' element={<NetworkListView />} />
           <Route path=':networkId' element={<NetworkView />}>
+            <Route path='' element={<NetworkOverview />} />
             <Route path='servers'>
               <Route path='' element={<ServerListView />} />
               <Route path=':serverId' element={<ServerView />}>

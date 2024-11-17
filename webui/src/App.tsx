@@ -2,11 +2,11 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 
 import './App.css';
 
-import { Outlet } from "react-router-dom";
-import AppSidebar from "./components/app-sidebar/AppSidebar";
+import { Outlet } from 'react-router-dom';
+import AppSidebar from './components/app-sidebar/AppSidebar';
 import Breadcrumbs from './components/breadcrumbs/Breadcrumbs';
 
-function App() {
+export default function App() {
   return (
     <>
       <AppSidebar />
@@ -21,5 +21,3 @@ function App() {
     </>
   );
 }
-
-export default App;
