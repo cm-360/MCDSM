@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 
-import ServersSidebar from './sidebar/ServersSidebar';
 import { ServerPeekInfo } from '../../types';
 import { API_BASE_URL } from '../../constants';
 import LoadingDots from '../../components/loading-dots/LoadingDots';
 import { useNetworkContext } from '../networks/NetworkView';
+import ServerList from '../../components/server-list/ServerList';
+import SectionHeader from '../../components/section-heading/SectionHeader';
 
 function ServerListView() {
   const { networkInfo } = useNetworkContext();
@@ -23,16 +23,18 @@ function ServerListView() {
     fetchServers();
   }, []);
 
-  if (!servers) {
-    return <div className='container-md'><LoadingDots /></div>;
-  }
-
   return (
     <>
-      <ServersSidebar />
-      {servers.map((server) => 
-        <Link key={server.id} to={server.id}>{server.display_name}</Link>
-      )}
+      <SectionHeader>
+        <h2>Servers</h2>
+      </SectionHeader>
+      <div className='container-md'>
+        {
+          servers.length
+            ? <ServerList networkId={networkInfo.id} servers={servers} />
+            : <div className='container-md'><LoadingDots /></div>
+        }
+      </div>
     </>
   );
 }
