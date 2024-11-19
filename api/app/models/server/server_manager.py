@@ -194,7 +194,7 @@ class ServerManager(Serializable):
 
     @property
     def data_directory_external(self) -> str:
-        return os.path.join(self.network.directory, 'servers', self.id, 'data')
+        return os.path.join(self.network.docker_manager.networks_directory_external, self.network.id, 'servers', self.id, 'data')
 
     @property
     def data_directory_internal(self) -> str:
