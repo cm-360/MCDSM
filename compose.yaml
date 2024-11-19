@@ -12,5 +12,6 @@ services:
       - ./networks:/networks
       - ./resources:/resources
     environment:
+      - USE_INTERNAL_DIRS=true
       - NETWORKS_DIR=/networks
       - RESOURCES_DIR=/resources

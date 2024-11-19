@@ -19,7 +19,9 @@ class DockerManager:
         self.prefix = 'mcdsm'
 
         # Volume directories
-        self.networks_directory = os.getenv('NETWORKS_DIR', os.path.join(os.getcwd(), 'networks'))
+        self.use_internal = os.getenv('USE_INTERNAL_DIRS', 'false').lower() == 'true'
+        self.networks_directory_external = os.getenv('NETWORKS_DIR', os.path.join(os.getcwd(), 'networks'))
+        self.networks_directory_internal = '/networks'
         self.data_directory_internal = '/data'
         self.resources_directory_external = os.getenv('RESOURCES_DIR', os.path.join(os.getcwd(), 'resources'))
         self.resources_directory_internal = '/resources'
@@ -45,8 +47,8 @@ class DockerManager:
     def load_resources(self) -> None:
         self.collections = {}
 
-        for entry in os.listdir(self.resources_directory_external):
-            entry_path = os.path.join(self.resources_directory_external, entry)
+        for entry in os.listdir(self.resources_directory):
+            entry_path = os.path.join(self.resources_directory, entry)
 
             # Skip non-directories
             if not os.path.isdir(entry_path):
@@ -84,3 +86,17 @@ class DockerManager:
 
         server = network.servers.get(server_id, None)
         return server
+
+    @property
+    def networks_directory(self):
+        if self.use_internal:
+            return self.networks_directory_internal
+        else:
+            return self.networks_directory_external
+
+    @property
+    def resources_directory(self):
+        if self.use_internal:
+            return self.resources_directory_internal
+        else:
+            return self.resources_directory_external
