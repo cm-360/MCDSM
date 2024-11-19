@@ -138,7 +138,9 @@ class ServerManager(Serializable):
         )
 
     def start_container(self) -> None:
-        self.create_resource_links(self.resources_directory_internal, self.data_directory_external)
+        # TODO better naming scheme for these directories
+        data_directory = os.path.join(self.network.docker_manager.networks_directory, self.network.id, 'servers', self.id, 'data')
+        self.create_resource_links(self.resources_directory_internal, data_directory)
         self.get_or_create_container().start()
 
     def stop_container(self) -> None:
