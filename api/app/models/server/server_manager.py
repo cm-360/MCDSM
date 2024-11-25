@@ -189,7 +189,7 @@ class ServerManager(Serializable):
     # https://stackoverflow.com/questions/66328780/how-to-attach-a-pseudo-tty-to-a-docker-container-with-docker-py-to-replicate-beh
     @property
     def socket(self):
-        if self._socket is None:
+        if self._socket is None or self._socket.closed:
             self.connect_socket()
 
         return self._socket

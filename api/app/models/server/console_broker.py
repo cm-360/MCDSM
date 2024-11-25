@@ -20,8 +20,9 @@ class ConsoleBroker:
 
     def _socket_listener(self) -> None:
         # TODO unblock on exit
+        # TODO keep listener running and re-attach socket on container start (event? lock?)
         while True:
-            if self.server_manager.socket is None:
+            if self.server_manager.socket is None or self.server_manager.socket.closed:
                 break
             data = self.server_manager.socket.read(1024)
             if 0 == len(data):
@@ -36,7 +37,7 @@ class ConsoleBroker:
         self.server_manager.socket.flush()
 
     async def subscribe(self, include_logs: bool=False) -> AsyncGenerator[str, None]:
-        if self.listener_task is None:
+        if self.listener_task is None or self.listener_task.done():
             self.start_socket_listener()
 
         connection = asyncio.Queue()
